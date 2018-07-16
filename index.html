@@ -1,0 +1,45 @@
+<head>
+<title>Google Maps Example</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK7QGkHUeJ_5K7Kgb9YXO3tqAB2QlKgcs"></script>
+</head>
+<body>
+  <div id="map" />
+</body>
+
+<script>
+	$(window).load(function() {
+  // Construct the catalog query string
+  url = 'https://data.ct.gov/resource/v4tt-nt9n.json?'
+      + 'organization_type=Public%20School%20Districts'
+      + '&$$app_token=09sIcqEhoY0teGY5rhupZGqhW';
+
+  // Intialize our map
+  var center = new google.maps.LatLng(41.7656874, -72.680087);
+  var mapOptions = {
+    zoom: 8,
+    center: center
+  }
+  var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  var geoCoder = new google.maps.Geocoder();
+
+  // Retrieve our data and plot it
+  $.getJSON(url, function(data, textstatus) {
+    // console.log(data);
+    $.each(data, function(i, entry) {
+    	var address = entry.building+" "+entry.street+" "+entry.boro+" "+entry.zipcode;
+    	geoCoder.geocode({'address': address}, function(results,status) {
+    		if(status === 'OK') {
+    			var marker = new google.maps.Marker({
+    				position: results[0].geometry.location,
+    				map: map,
+    				title: entry.dba
+    			});
+
+    		}
+    	});
+    });
+  });
+});
+</script>
